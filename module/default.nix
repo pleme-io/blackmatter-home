@@ -2,14 +2,15 @@
 #
 # Declares flake fragments for ~/ with system management apps.
 # Note: git init at ~ is skipped — nix-place writes flake.nix without git tracking.
-{ lib, config, flakeFragmentLib, ... }:
+{ lib, config, flakeFragmentLib, claudeMdLib, ... }:
 with lib;
 let
   cfg = config.blackmatter.components.home;
   inherit (flakeFragmentLib) mkFragment mkTendStatusApp;
+  inherit (claudeMdLib) mkStaticDoc;
 in {
   options.blackmatter.components.home = {
-    enable = mkEnableOption "Home-level flake.nix with system management apps";
+    enable = mkEnableOption "Home-level flake.nix and CLAUDE.md with system management apps";
 
     nixRepoPath = mkOption {
       type = types.str;
@@ -28,6 +29,11 @@ in {
   };
 
   config = mkIf cfg.enable {
+    # Deploy ~/CLAUDE.md
+    blackmatter.claudeMdFiles."" = [
+      (mkStaticDoc { id = "home-base"; source = ../docs/home-CLAUDE.md; })
+    ];
+
     # Auto-populate managed flake dirs from the fragment registry
     blackmatter.components.home.managedFlakeDirs = let
       homeDir = config.home.homeDirectory;
