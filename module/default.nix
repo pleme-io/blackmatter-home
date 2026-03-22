@@ -36,7 +36,6 @@ in {
     blackmatter.flakeFragments."" = [
       {
         id = "home-management";
-        # inputs default to nixpkgs + flake-utils (from flakeFragmentType)
         apps = {
           rebuild = {
             description = "Rebuild darwin system from nix repo";
