@@ -2,10 +2,11 @@
 #
 # Declares flake fragments for ~/ with system management apps.
 # Note: git init at ~ is skipped — nix-place writes flake.nix without git tracking.
-{ lib, config, ... }:
+{ lib, config, flakeFragmentLib, ... }:
 with lib;
 let
   cfg = config.blackmatter.components.home;
+  inherit (flakeFragmentLib) mkFragment mkTendStatusApp;
 in {
   options.blackmatter.components.home = {
     enable = mkEnableOption "Home-level flake.nix with system management apps";
@@ -34,7 +35,7 @@ in {
     in map (key: if key == "" then homeDir else "${homeDir}/${key}") fragmentKeys;
 
     blackmatter.flakeFragments."" = [
-      {
+      (mkFragment {
         id = "home-management";
         apps = {
           rebuild = {
@@ -72,10 +73,7 @@ in {
               printf "  Nix store: %s\n" "$(du -sh /nix/store 2>/dev/null | cut -f1)"
             '';
           };
-          tend-status = {
-            description = "All workspace sync status (via tend)";
-            script = "tend status";
-          };
+          tend-status = mkTendStatusApp null;
           flake-health = {
             description = "Verify all managed flake.nix files parse";
             script = let
@@ -98,7 +96,7 @@ in {
             '';
           };
         };
-      }
+      })
     ];
   };
 }
