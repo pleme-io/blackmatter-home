@@ -1,0 +1,21 @@
+schema_version: 1
+manifest:
+  name: blackmatter-home
+  kind: BlackmatterComponent
+  archetype: blackmatter-component-hm-only
+  description: Home-level flake.nix provisioning with system management apps.
+dimensions:
+  vocabulary: [home, flake-fragment, system-management]
+  domains: [Nix]
+  stack: [HomeManager]
+  modules:
+    home_manager: module/
+  render:
+    produces:
+      - "~/flake.nix"
+  compliance:
+    satisfies: []
+    participates: []
+  dag:
+    inputs: [nixpkgs, substrate]
+  attestation: { merkle_root: null, signed_by: null, producer: blackmatter-component-flake.nix }
